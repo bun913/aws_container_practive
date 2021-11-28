@@ -61,3 +61,25 @@ Fargate はコンテナ向けサーバレスコンピューティングエンジ
 
 なお SSH 接続による調査がしにくいという問題があったが、
 [ECS Exec](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/userguide/ecs-exec.html)というサービスができている
+
+## Chapter3
+
+運用設計
+
+- どのようにシステムの状態を把握するか
+- どのように不具合の修正を容易にするか
+- どのようにデプロイのリスクを軽減するか
+
+ロギング設計
+
+- CloudWatchLogs
+  - これが標準的
+  - 大量にログが出力されるケースでは不向き(自分も痛い目見たことある)
+- Firelens
+  - fluentd や fluentbit が利用できる
+  - AWS も fluentbit を推奨している
+  - fluentbid の場合 AWS が公式に提供しているコンテナイメージを使える
+  - faragate のタスク定義の中にアプリケーションコンテナと fluentbid コンテナを同梱させる
+
+Firelens を利用することで　 S3 だけでなく CloudWatchLogs に転送することもできる。
+ログドライバーとして FireLens を指定する(CloudWatchDriver だとコストが高くなる)
