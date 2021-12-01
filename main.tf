@@ -15,6 +15,7 @@ provider "aws" {
 
 module "network" {
   source = "./modules/networks"
+  name   = "sbcntr-base"
 }
 
 module "container" {

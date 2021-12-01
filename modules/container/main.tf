@@ -1,3 +1,4 @@
+// ECR Repository
 resource "aws_ecr_repository" "backend" {
   name                 = "sbcntr-backend"
   image_tag_mutability = "MUTABLE"
@@ -19,4 +20,3 @@ resource "aws_ecr_repository" "frontend" {
     encryption_type = "KMS"
   }
 }
-
