@@ -17,3 +17,7 @@ module "network" {
   source = "./modules/networks"
 }
 
+module "container" {
+  source = "./modules/container"
+}
+
