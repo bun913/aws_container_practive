@@ -591,3 +591,5 @@ Outputs:
     Value: !Ref sbcntrSubnetPrivateEgress1C
   SecurityGroupVpcEndpoint:
     Value: !Ref sbcntrSgEgress
+  RouteAppId:
+    Value: !Ref sbcntrRouteApp
