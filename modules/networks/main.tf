@@ -57,3 +57,53 @@ resource "aws_vpc_endpoint" "s3_gateway" {
   }
 }
 
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  vpc_id            = data.aws_cloudformation_stack.network.outputs["VpcId"]
+  service_name      = "com.amazonaws.ap-northeast-1.logs"
+  vpc_endpoint_type = "Interface"
+  subnet_ids = [
+    "${data.aws_cloudformation_stack.network.outputs["SubnetEgressA"]}",
+    "${data.aws_cloudformation_stack.network.outputs["SubnetEgressC"]}"
+  ]
+  security_group_ids = [
+    "${data.aws_cloudformation_stack.network.outputs["SecurityGroupVpcEndpoint"]}"
+  ]
+  private_dns_enabled = true
+  tags = {
+    Name = "sbcntr-vpce-logs"
+  }
+}
+
+// ALB for Internal
+resource "aws_lb" "internal" {
+  name               = "sbcntr-alb-internal"
+  internal           = true
+  load_balancer_type = "application"
+  security_groups = [
+    "${data.aws_cloudformation_stack.network.outputs["SecurityGroupLBInternal"]}"
+  ]
+  subnets = [
+    "${data.aws_cloudformation_stack.network.outputs["SubnetEgressA"]}",
+    "${data.aws_cloudformation_stack.network.outputs["SubnetEgressC"]}"
+  ]
+  enable_deletion_protection = true
+}
+
+resource "aws_lb_target_group" "internal_target_group" {
+  name     = "sbcntr-tg-sbcntrdemo-blue"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = data.aws_cloudformation_stack.network.outputs["VpcId"]
+  health_check {
+    enabled             = true
+    path                = "/healthcheck"
+    port                = "traffic-port"
+    healthy_threshold   = 3
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 15
+    matcher             = "200"
+  }
+}
+
+// @TODO: ルール・リスナーの追加
