@@ -89,7 +89,7 @@ resource "aws_lb" "internal" {
   enable_deletion_protection = true
 }
 
-resource "aws_lb_target_group" "internal_target_group" {
+resource "aws_lb_target_group" "blue_target_group" {
   name     = "sbcntr-tg-sbcntrdemo-blue"
   port     = 80
   protocol = "HTTP"
@@ -106,4 +106,39 @@ resource "aws_lb_target_group" "internal_target_group" {
   }
 }
 
-// @TODO: ルール・リスナーの追加
+resource "aws_lb_target_group" "green_target_group" {
+  name     = "sbcntr-tg-sbcntrdemo-green"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = data.aws_cloudformation_stack.network.outputs["VpcId"]
+  health_check {
+    enabled             = true
+    path                = "/healthcheck"
+    port                = "traffic-port"
+    healthy_threshold   = 3
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 15
+    matcher             = "200"
+  }
+}
+
+resource "aws_lb_listener" "blue" {
+  load_balancer_arn = aws_lb.internal.arn
+  port              = "80"
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.blue_target_group.arn
+  }
+}
+
+resource "aws_lb_listener" "green" {
+  load_balancer_arn = aws_lb.internal.arn
+  port              = "10080"
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.green_target_group.arn
+  }
+}
