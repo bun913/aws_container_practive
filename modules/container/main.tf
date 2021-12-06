@@ -55,6 +55,7 @@ resource "aws_ecs_task_definition" "service" {
   family                   = "sbcntr-backend-def"
   cpu                      = 512
   memory                   = 1024
+  network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   container_definitions = jsonencode([
     {
