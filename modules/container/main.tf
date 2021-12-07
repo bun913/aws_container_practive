@@ -50,6 +50,29 @@ resource "aws_cloudwatch_log_group" "backend" {
   retention_in_days = 30
 }
 
+// IAM role for task_definition
+resource "aws_iam_policy" "backend_task_df_policy" {
+  name   = "sbcntr-backend-td-policy"
+  policy = file("./files/task_df_policy.json")
+}
+
+resource "aws_iam_role" "backend_task_df_role" {
+  name = "ecsTaskExecutionRoleForFargate"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+  managed_policy_arns = [aws_iam_policy.backend_task_df_policy.arn]
+}
+
 // ECS
 resource "aws_ecs_task_definition" "service" {
   family                   = "sbcntr-backend-def"
@@ -57,6 +80,7 @@ resource "aws_ecs_task_definition" "service" {
   memory                   = 1024
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
+  execution_role_arn       = aws_iam_role.backend_task_df_role.arn
   container_definitions = jsonencode([
     {
       name      = "app"
@@ -73,8 +97,9 @@ resource "aws_ecs_task_definition" "service" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-region = "ap-northeast-1"
-          awslogs-group  = aws_cloudwatch_log_group.backend.id
+          awslogs-region        = "ap-northeast-1"
+          awslogs-group         = aws_cloudwatch_log_group.backend.id
+          awslogs-stream-prefix = "backend-app"
         }
       }
     }
