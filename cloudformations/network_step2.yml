@@ -589,9 +589,15 @@ Outputs:
     Value: !Ref sbcntrSubnetPrivateEgress1A
   SubnetEgressC:
     Value: !Ref sbcntrSubnetPrivateEgress1C
+  SubnetContainer1a:
+    Value: !Ref sbcntrSubnetPrivateContainer1A
+  SubnetContainer1c:
+    Value: !Ref sbcntrSubnetPrivateContainer1C
   SecurityGroupVpcEndpoint:
     Value: !Ref sbcntrSgEgress
   SecurityGroupLBInternal:
     Value: !Ref sbcntrSgInternal
+  SecurityGroupContainer:
+    Value: !Ref sbcntrSgContainer
   RouteAppId:
     Value: !Ref sbcntrRouteApp
