@@ -21,29 +21,6 @@ resource "aws_ecr_repository" "frontend" {
   }
 }
 
-// IAM role for deploy
-resource "aws_iam_role" "deploy_role" {
-  name = "ecsCodeDeployRole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "codedeploy.amazonaws.com"
-        }
-      }
-    ]
-  })
-  managed_policy_arns = [aws_iam_policy.deploy_plicy.arn]
-}
-
-resource "aws_iam_policy" "deploy_plicy" {
-  name   = "ecs-deploy-role"
-  policy = file("./files/ecs_iam_policy.json")
-}
-
 // CloudWatchLogs for backend
 resource "aws_cloudwatch_log_group" "backend" {
   name              = "sbcntr-backend-log"
@@ -104,5 +81,40 @@ resource "aws_ecs_task_definition" "service" {
       }
     }
   ])
+}
+
+resource "aws_ecs_cluster" "backend" {
+  name = "sbcntr-ecs-backend-cluster"
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+}
+
+resource "aws_ecs_service" "backend" {
+  name                               = "sbcntr-ecs-backend-service"
+  cluster                            = aws_ecs_cluster.backend.id
+  task_definition                    = aws_ecs_task_definition.service.id
+  launch_type                        = "FARGATE"
+  desired_count                      = 2
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+  deployment_controller {
+    type = "CODE_DEPLOY"
+  }
+  // iam_role                = aws_iam_service_linked_role.ecs.id */
+  enable_ecs_managed_tags = true
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    security_groups  = var.security_groups
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = var.blue_target
+    container_name   = "app"
+    container_port   = 80
+  }
 }
 

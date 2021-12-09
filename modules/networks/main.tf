@@ -94,6 +94,7 @@ resource "aws_lb_target_group" "blue_target_group" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.aws_cloudformation_stack.network.outputs["VpcId"]
+  target_type = "ip"
   health_check {
     enabled             = true
     path                = "/healthcheck"
@@ -111,6 +112,7 @@ resource "aws_lb_target_group" "green_target_group" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.aws_cloudformation_stack.network.outputs["VpcId"]
+  target_type = "ip"
   health_check {
     enabled             = true
     path                = "/healthcheck"
