@@ -19,7 +19,12 @@ module "network" {
 }
 
 module "container" {
-  source = "./modules/container"
+  source                = "./modules/container"
+  vpc_id                = module.network.vpc_id
+  ingress_alb_sg        = module.network.ingress_alb_sg_id
+  internal_alb_dns_name = module.network.internal_alb_dns_name
+  frontend_subnet1a     = module.network.frontend_subnet1a
+  frontend_subnet1c     = module.network.frontend_subnet1c
   subnet_ids = [
     module.network.backend_subnet1a,
     module.network.backend_subnet1c

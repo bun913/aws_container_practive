@@ -117,3 +117,20 @@ resource "aws_ecs_service" "backend" {
     container_port   = 80
   }
 }
+
+// Frontendは今回クラスター上で直接タスクとして動作させるためサービス定義は省略
+resource "aws_cloudformation_stack" "frontend" {
+  name          = "sbcntr-frontend-stack"
+  template_body = file(".../../cloudformations/frontend.cf.yml")
+  parameters = {
+    VpcId = var.vpc_id
+    ALBSecurityGroupId = var.ingress_alb_sg
+    ALBSubnetId1 = var.frontend_subnet1a
+    ALBSubnetId2 = var.frontend_subnet1c
+    BackendHost = var.internal_alb_dns_name
+  }
+  depends_on = [
+    aws_ecs_service.backend
+  ]
+}
+

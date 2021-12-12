@@ -1,3 +1,23 @@
+output "vpc_id" {
+  value = data.aws_cloudformation_stack.network.outputs["VpcId"]
+}
+
+output "ingress_alb_sg_id" {
+  value = data.aws_cloudformation_stack.network.outputs["SecurityGroupIngressALB"]
+}
+
+output "frontend_subnet1a" {
+  value = data.aws_cloudformation_stack.network.outputs["SubnetIgreess1a"]
+}
+
+output "frontend_subnet1c" {
+  value = data.aws_cloudformation_stack.network.outputs["SubnetIgreess1c"]
+}
+
+output "internal_alb_dns_name" {
+  value = aws_lb.internal.dns_name
+}
+
 output "backend_subnet1a" {
   value = data.aws_cloudformation_stack.network.outputs["SubnetContainer1a"]
 }
