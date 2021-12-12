@@ -29,13 +29,13 @@ module "container" {
   blue_target     = module.network.target_blue.arn
 }
 
-/* module "deployment" { */
-/*   source = "./modules/deploy" */
-/*   cluster_name = module.container.cluster_name */
-/*   service_name = module.container.service_name */
-/*   green_listner_arn = module.network.lister_green.arn */
-/*   blue_lister_arn = module.network.lister_blue.arn */
-/*   blue_tg_name = module.network.blue_target.name */
-/*   greeen_tg_name = module.network.green_target.name */
-/* } */
+module "deployment" {
+  source            = "./modules/deploy"
+  cluster_name      = module.container.cluster_name
+  service_name      = module.container.service_name
+  green_listner_arn = module.network.lister_green.arn
+  blue_lister_arn   = module.network.lister_blue.arn
+  blue_tg_name      = module.network.target_blue.name
+  greeen_tg_name    = module.network.target_green.name
+}
 
