@@ -44,3 +44,11 @@ module "deployment" {
   greeen_tg_name    = module.network.target_green.name
 }
 
+module "databases" {
+  source     = "./modules/databases"
+  subnet_db1 = module.network.db_subnet1a
+  subnet_db2 = module.network.db_subnet1c
+  db_pass    = var.DB_INIT_PASSWORD
+  db_sg      = module.network.db_sg
+}
+
