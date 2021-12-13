@@ -26,8 +26,20 @@ output "backend_subnet1c" {
   value = data.aws_cloudformation_stack.network.outputs["SubnetContainer1c"]
 }
 
+output "db_subnet1a" {
+  value = data.aws_cloudformation_stack.network.outputs["SubnetDB1a"]
+}
+
+output "db_subnet1c" {
+  value = data.aws_cloudformation_stack.network.outputs["SubnetDB1c"]
+}
+
 output "container_sg" {
   value = data.aws_cloudformation_stack.network.outputs["SecurityGroupContainer"]
+}
+
+output "db_sg" {
+  value = data.aws_cloudformation_stack.network.outputs["SecurityGroupDB"]
 }
 
 output "target_green" {
